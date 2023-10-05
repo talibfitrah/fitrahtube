@@ -1,0 +1,104 @@
+import 'package:flutter/material.dart';
+import 'settings_screen.dart';
+import 'home_content_screen.dart'; // Import other screen files
+import 'channels_screen.dart';
+import 'playlists_screen.dart';
+import 'videos_screen.dart';
+import 'live_screen.dart';
+
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int _currentIndex = 0;
+
+  void _onTabTapped(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Home"),
+        actions: [
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              if (value == "settings") {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SettingsScreen(),
+                  ),
+                );
+              }
+            },
+            itemBuilder: (context) => [
+              PopupMenuItem<String>(
+                value: "settings",
+                child: Text("Settings"),
+              ),
+            ],
+          ),
+        ],
+      ),
+      body: _buildScreen(_currentIndex), // Display the selected screen
+      bottomNavigationBar: Theme(
+        data: Theme.of(context).copyWith(
+          canvasColor: Colors.blue, // Set the background color
+          primaryColor: Colors.white, // Set the selected item color
+          textTheme: Theme.of(context).textTheme.copyWith(
+            caption: TextStyle(color: Colors.white), // Set the unselected item color
+          ),
+        ),
+        child: BottomNavigationBar(
+          currentIndex: _currentIndex,
+          onTap: _onTabTapped,
+          items: [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: "Home",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.video_library),
+              label: "Channels",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.playlist_play),
+              label: "Playlists",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.video_library),
+              label: "Videos",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.live_tv),
+              label: "Live",
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildScreen(int index) {
+    switch (index) {
+      case 0:
+        return HomeContentScreen();
+      case 1:
+        return ChannelsScreen();
+      case 2:
+        return PlaylistsScreen();
+      case 3:
+        return VideosScreen();
+      case 4:
+        return LiveScreen();
+      default:
+        return Container();
+    }
+  }
+}

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
-class HomeScreen extends StatelessWidget {
+class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Next Screen"),
+        title: Text("Settings"),
       ),
       body: Center(
-        child: Text("This is the next screen"),
+        child: Text("Settings Content"),
       ),
     );
   }
