@@ -24,7 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Home"),
+        title: const Text("Home"),
         actions: [
           PopupMenuButton<String>(
             onSelected: (value) {
@@ -38,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
               }
             },
             itemBuilder: (context) => [
-              PopupMenuItem<String>(
+              const PopupMenuItem<String>(
                 value: "settings",
                 child: Text("Settings"),
               ),
@@ -52,13 +52,13 @@ class _HomeScreenState extends State<HomeScreen> {
           canvasColor: Colors.blue, // Set the background color
           primaryColor: Colors.white, // Set the selected item color
           textTheme: Theme.of(context).textTheme.copyWith(
-            caption: TextStyle(color: Colors.white), // Set the unselected item color
+            labelSmall: const TextStyle(color: Colors.white), // Set the unselected item color (Use labelSmall for newer Flutter versions)
           ),
         ),
         child: BottomNavigationBar(
           currentIndex: _currentIndex,
           onTap: _onTabTapped,
-          items: [
+          items: const [
             BottomNavigationBarItem(
               icon: Icon(Icons.home),
               label: "Home",
