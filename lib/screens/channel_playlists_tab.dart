@@ -1,14 +1,18 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'playlist_videos_screen.dart'; // Import the PlaylistVideosScreen to show videos in a playlist
+import 'playlist_videos_screen.dart';  // Import the screen to display playlist videos
 
-class PlaylistsScreen extends StatefulWidget {
+class ChannelPlaylistsTab extends StatefulWidget {
+  final String channelId;
+
+  ChannelPlaylistsTab({required this.channelId});
+
   @override
-  _PlaylistsScreenState createState() => _PlaylistsScreenState();
+  _ChannelPlaylistsTabState createState() => _ChannelPlaylistsTabState();
 }
 
-class _PlaylistsScreenState extends State<PlaylistsScreen> {
+class _ChannelPlaylistsTabState extends State<ChannelPlaylistsTab> {
   List<PlaylistItem> _playlistItems = [];
   bool _isLoading = false;
   int _currentPage = 0;
@@ -17,7 +21,7 @@ class _PlaylistsScreenState extends State<PlaylistsScreen> {
   @override
   void initState() {
     super.initState();
-    fetchPlaylists(); // Fetch the first page of playlists
+    fetchPlaylists();
   }
 
   Future<void> fetchPlaylists() async {
@@ -28,7 +32,7 @@ class _PlaylistsScreenState extends State<PlaylistsScreen> {
     });
 
     final url = Uri.parse(
-        'https://app.edratech.com:8443/api/playlist?page=$_currentPage&size=10');
+        'https://app.edratech.com:8443/api/channel/${widget.channelId}/playlists?page=$_currentPage&size=10');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -38,8 +42,8 @@ class _PlaylistsScreenState extends State<PlaylistsScreen> {
       setState(() {
         _playlistItems
             .addAll(items.map((item) => PlaylistItem.fromMap(item)).toList());
-        _isLastPage = decodedData['last']; // Mark if it's the last page
-        _currentPage++; // Increment page for next load
+        _isLastPage = decodedData['last'];
+        _currentPage++;
       });
     }
 
@@ -50,31 +54,26 @@ class _PlaylistsScreenState extends State<PlaylistsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Playlists"), // Title of the screen
-      ),
-      body: NotificationListener<ScrollNotification>(
-        onNotification: (ScrollNotification scrollInfo) {
-          if (!_isLoading &&
-              !_isLastPage &&
-              scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
-            fetchPlaylists(); // Fetch more playlists when scrolled to the bottom
+    return NotificationListener<ScrollNotification>(
+      onNotification: (ScrollNotification scrollInfo) {
+        if (!_isLoading &&
+            !_isLastPage &&
+            scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+          fetchPlaylists(); // Fetch more playlists when scrolled to bottom
+        }
+        return false;
+      },
+      child: ListView.builder(
+        itemCount: _playlistItems.length + 1,
+        itemBuilder: (context, index) {
+          if (index == _playlistItems.length) {
+            return _isLoading
+                ? Center(child: CircularProgressIndicator())
+                : SizedBox.shrink();
           }
-          return false;
+          final playlist = _playlistItems[index];
+          return _buildPlaylistItem(context, playlist);
         },
-        child: ListView.builder(
-          itemCount: _playlistItems.length + 1, // +1 for the loading indicator
-          itemBuilder: (context, index) {
-            if (index == _playlistItems.length) {
-              return _isLoading
-                  ? Center(child: CircularProgressIndicator())
-                  : SizedBox.shrink();
-            }
-            final playlist = _playlistItems[index];
-            return _buildPlaylistItem(context, playlist);
-          },
-        ),
       ),
     );
   }

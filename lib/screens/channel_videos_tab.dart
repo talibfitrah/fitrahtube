@@ -3,25 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'video_screen.dart'; // Import the VideoScreen to show the video
 
-class HomeContentScreen extends StatelessWidget {
+class ChannelVideosTab extends StatefulWidget {
+  final String channelId;
+
+  ChannelVideosTab({required this.channelId});
+
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: CustomListView(), // Use a custom ListView
-    );
-  }
+  _ChannelVideosTabState createState() => _ChannelVideosTabState();
 }
 
-class CustomListView extends StatefulWidget {
-  @override
-  _CustomListViewState createState() => _CustomListViewState();
-}
-
-class _CustomListViewState extends State<CustomListView> {
+class _ChannelVideosTabState extends State<ChannelVideosTab> {
   List<VideoItem> _videoItems = [];
-  int _currentPage = 0;
   bool _isLoading = false;
-  bool _hasMoreData = true;
+  int _currentPage = 0;
   bool _isLastPage = false;
 
   @override
@@ -38,7 +32,7 @@ class _CustomListViewState extends State<CustomListView> {
     });
 
     final url = Uri.parse(
-        'https://app.edratech.com:8443/api/search/all?size=10&page=$_currentPage');
+        'https://app.edratech.com:8443/api/channel/${widget.channelId}/videos?page=$_currentPage&size=10');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -95,7 +89,7 @@ class _CustomListViewState extends State<CustomListView> {
         );
       },
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10.0), // Padding between items
+        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0), // Padding between items
         child: Column(
           children: [
             // Video card with shadow and margin
@@ -163,27 +157,27 @@ class _CustomListViewState extends State<CustomListView> {
 }
 
 class VideoItem {
+  final String videoId;
   final String title;
   final String thumbnailUrl;
-  final String videoId;
-  final String publishedAt; // Added publishedAt
-  final String totalViews; // Added totalViews
+  final String publishedAt;
+  final String totalViews;
 
   VideoItem({
+    required this.videoId,
     required this.title,
     required this.thumbnailUrl,
-    required this.videoId,
-    required this.publishedAt, // Initialize publishedAt
-    required this.totalViews, // Initialize totalViews
+    required this.publishedAt,
+    required this.totalViews,
   });
 
   factory VideoItem.fromMap(Map<String, dynamic> map) {
     return VideoItem(
+      videoId: map['videoId'] ?? '',
       title: map['title'] ?? '',
-      thumbnailUrl: map['thumbnailUrl'] ?? '',
-      videoId: map['id'] ?? '',
-      publishedAt: map['publishedAt'] ?? 'Unknown date', // Example metadata
-      totalViews: map['metadataValue']?.toString() ?? '0', // Example metadata
+      thumbnailUrl: map['thumbnails'][0]['url'] ?? '',
+      publishedAt: map['publishedAt'] ?? '',
+      totalViews: map['totalViews']?.toString() ?? '0',
     );
   }
 }

@@ -58,6 +58,14 @@ android {
             signingConfig signingConfigs.debug
         }
     }
+
+    // Add this section below the buildTypes block to rename the APK
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            def customName = "AlbunyaanTuze_${variant.buildType.name}_${variant.versionName}.apk" as Object
+            outputFileName = customName
+        }
+    }
 }
 
 flutter {

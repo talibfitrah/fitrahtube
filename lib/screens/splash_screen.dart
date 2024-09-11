@@ -1,21 +1,46 @@
 import 'package:flutter/material.dart';
 import 'home_screen.dart'; // Import the next screen
 
-class FitrahTubeSplash extends StatefulWidget {
+class AlbunyaanTuzeSplash extends StatefulWidget {
   @override
-  _FitrahTubeSplashState createState() => _FitrahTubeSplashState();
+  _AlbunyaanTuzeSplashState createState() => _AlbunyaanTuzeSplashState();
 }
 
-class _FitrahTubeSplashState extends State<FitrahTubeSplash> {
+class _AlbunyaanTuzeSplashState extends State<AlbunyaanTuzeSplash>
+    with SingleTickerProviderStateMixin {
+  // Animation controller for the logo reveal
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
   @override
   void initState() {
     super.initState();
-    // Add a delay of 5 seconds before navigating to the next screen
+
+    // Set up the animation controller and animation (Speed up the animation)
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    );
+
+    _animation = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeInOut, // Smooth animation
+    );
+
+    _controller.forward(); // Start the animation
+
+    // Navigate to the next screen after 5 seconds
     Future.delayed(Duration(seconds: 5), () {
-      Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (context) => HomeScreen(),
-      ));
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => HomeScreen()),
+      );
     });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose(); // Dispose of the controller when no longer needed
+    super.dispose();
   }
 
   @override
@@ -28,77 +53,63 @@ class _FitrahTubeSplashState extends State<FitrahTubeSplash> {
       body: SafeArea(
         child: Stack(
           children: <Widget>[
-            // Gradient background
+            // Plain white background
             Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.green, Colors.blue],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
+              color: Colors.white, // Set background color to white
             ),
             // Centered content
             Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  // Spacer to push content to the top
-                  Spacer(),
-                  // Add the text "FITRAH" and "TUBE" along with the heart icon
+                  Spacer(), // Push content towards the top
+
+                  // Logo with animation (scale-up effect)
+                  ScaleTransition(
+                    scale: _animation,
+                    child: Image.asset(
+                      'assets/images/AlbunyaanTuze.png', // Path to the logo
+                      width: screenWidth * 0.6, // Responsive size for the logo
+                      height: screenHeight * 0.3,
+                    ),
+                  ),
+
+                  SizedBox(height: screenHeight * 0.02), // Spacing between logo and text
+
+                  // "Beta" and Arabic text
                   Column(
                     children: [
-                      // Add the text "Fitrah Tube"
-                      Text.rich(
-                        TextSpan(
-                          children: <TextSpan>[
-                            TextSpan(
-                              text: "FITRAH",
-                              style: TextStyle(
-                                fontSize: screenWidth * 0.1, // Responsive font size
-                                color: Colors.white,
-                                fontFamily: "CoCoGoose",
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            TextSpan(
-                              text: " TUBE",
-                              style: TextStyle(
-                                fontSize: screenWidth * 0.1, // Responsive font size
-                                color: Colors.white,
-                                fontFamily: "CoCoGoose",
-                                fontWeight: FontWeight.normal,
-                              ),
-                            ),
-                          ],
+                      Text(
+                        "Beta", // English word
+                        style: TextStyle(
+                          fontSize: screenWidth * 0.07, // Adjust font size
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blueAccent, // Use a distinct color for Beta
+                          fontFamily: "Arial", // Simple and clean font for Beta
                         ),
                       ),
-                      // Add a space between text and heart icon
-                      SizedBox(height: screenHeight * 0.03), // Responsive spacing
-                      // Use a Stack to overlay the heart icon on top of the text
-                      Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          // White heart icon
-                          Icon(
-                            Icons.favorite,
-                            color: Colors.white,
-                            size: screenWidth * 0.15, // Responsive icon size
-                          ),
-                        ],
+                      Text(
+                        "الإصدار التجريبي", // Arabic translation for "First Edition"
+                        style: TextStyle(
+                          fontSize: screenWidth * 0.07, // Adjust font size
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blueAccent, // Match Beta color
+                          fontFamily: "Arial", // Clean font for Arabic text
+                        ),
                       ),
                     ],
                   ),
-                  // Spacer to push content to the bottom
-                  Spacer(),
+
+                  Spacer(), // Push content towards the bottom
+
                   // Add the "Powered by Stichting Tarbiyah Consultancy" text
                   Padding(
-                    padding: EdgeInsets.only(bottom: screenHeight * 0.03), // Responsive padding
+                    padding: EdgeInsets.only(bottom: screenHeight * 0.03),
                     child: Text(
                       "Powered by Stichting Tarbiyah Consultancy",
                       style: TextStyle(
                         fontSize: screenWidth * 0.035, // Responsive font size
-                        color: Colors.white,
+                        color: Colors.black, // Change the text color to black for better visibility on white background
                         fontFamily: "YourThinFont", // Replace with your thin font
                         fontWeight: FontWeight.normal,
                       ),

@@ -4,7 +4,6 @@ import 'home_content_screen.dart'; // Import other screen files
 import 'channels_screen.dart';
 import 'playlists_screen.dart';
 import 'videos_screen.dart';
-import 'live_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -64,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
               label: "Home",
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.video_library),
+              icon: Icon(Icons.subscriptions), // Icon representing channels
               label: "Channels",
             ),
             BottomNavigationBarItem(
@@ -72,12 +71,8 @@ class _HomeScreenState extends State<HomeScreen> {
               label: "Playlists",
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.video_library),
+              icon: Icon(Icons.ondemand_video), // Icon representing individual videos
               label: "Videos",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.live_tv),
-              label: "Live",
             ),
           ],
         ),
@@ -95,8 +90,6 @@ class _HomeScreenState extends State<HomeScreen> {
         return PlaylistsScreen();
       case 3:
         return VideosScreen();
-      case 4:
-        return LiveScreen();
       default:
         return Container();
     }

@@ -14,7 +14,7 @@ class FitrahTubeApp extends StatelessWidget {
     return MaterialApp(
       title: 'Fitrah Tube',
       debugShowCheckedModeBanner: false,
-      home: FitrahTubeSplash(),
+      home: AlbunyaanTuzeSplash(),
     );
   }
 }

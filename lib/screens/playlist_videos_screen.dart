@@ -1,14 +1,19 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'video_screen.dart'; // Import the VideoScreen to show the video
+import 'video_screen.dart';  // Import the VideoScreen to show the video
 
-class VideosScreen extends StatefulWidget {
+class PlaylistVideosScreen extends StatefulWidget {
+  final String playlistId;
+  final String playlistTitle;
+
+  PlaylistVideosScreen({required this.playlistId, required this.playlistTitle});
+
   @override
-  _VideosScreenState createState() => _VideosScreenState();
+  _PlaylistVideosScreenState createState() => _PlaylistVideosScreenState();
 }
 
-class _VideosScreenState extends State<VideosScreen> {
+class _PlaylistVideosScreenState extends State<PlaylistVideosScreen> {
   List<VideoItem> _videoItems = [];
   bool _isLoading = false;
   int _currentPage = 0;
@@ -21,24 +26,25 @@ class _VideosScreenState extends State<VideosScreen> {
   }
 
   Future<void> fetchVideos() async {
-    if (_isLoading || _isLastPage) return; // Prevent multiple calls or fetching beyond last page
+    if (_isLoading || _isLastPage) return;
 
     setState(() {
       _isLoading = true;
     });
 
     final url = Uri.parse(
-        'https://app.edratech.com:8443/api/video/all?page=$_currentPage&size=10');
+        'https://app.edratech.com:8443/api/playlist/${widget.playlistId}/videos?page=$_currentPage&size=10');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
       final decodedData = json.decode(utf8.decode(response.bodyBytes));
-      final items = decodedData['content'] as List<dynamic>;
+      final List<dynamic> items = decodedData['content'];
 
       setState(() {
-        _videoItems.addAll(items.map((item) => VideoItem.fromMap(item)).toList());
-        _isLastPage = decodedData['last']; // Mark if it's the last page
-        _currentPage++; // Increment page for next load
+        _videoItems.addAll(
+            items.map((item) => VideoItem.fromMap(item)).toList());
+        _isLastPage = decodedData['last'];
+        _currentPage++;
       });
     }
 
@@ -51,19 +57,19 @@ class _VideosScreenState extends State<VideosScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Videos"), // Title of the screen
+        title: Text(widget.playlistTitle), // Display the playlist title
       ),
       body: NotificationListener<ScrollNotification>(
         onNotification: (ScrollNotification scrollInfo) {
           if (!_isLoading &&
               !_isLastPage &&
               scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
-            fetchVideos(); // Fetch more videos when scrolled to the bottom
+            fetchVideos(); // Fetch more videos when scrolled to bottom
           }
           return false;
         },
         child: ListView.builder(
-          itemCount: _videoItems.length + 1, // +1 for the loading indicator
+          itemCount: _videoItems.length + 1,
           itemBuilder: (context, index) {
             if (index == _videoItems.length) {
               return _isLoading
@@ -83,7 +89,7 @@ class _VideosScreenState extends State<VideosScreen> {
 
     return InkWell(
       onTap: () {
-        // Navigate to the VideoScreen when a video is clicked
+        // Navigate to VideoScreen when a video is clicked
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -116,7 +122,6 @@ class _VideosScreenState extends State<VideosScreen> {
               style: TextStyle(fontSize: 14, color: Colors.grey),
               textAlign: TextAlign.center,
             ),
-            Divider(),
           ],
         ),
       ),
